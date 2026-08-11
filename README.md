@@ -1,3 +1,4 @@
+![header](./header.svg)
 ## Hi there 👋
 
 <!--
