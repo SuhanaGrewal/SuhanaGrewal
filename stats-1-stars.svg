@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 230" width="300" height="230">
 <defs>
  <linearGradient id="bg" x1="0" y1="0" x2="0.4" y2="1">
-  <stop offset="0" stop-color="#e9f0fb"/><stop offset="0.55" stop-color="#dee8f7"/>
-  <stop offset="1" stop-color="#d2e0f3"/></linearGradient>
+  <stop offset="0" stop-color="#d8e6f7"/><stop offset="0.55" stop-color="#c8dcf2"/>
+  <stop offset="1" stop-color="#b7cdea"/></linearGradient>
  <pattern id="g1" width="10" height="10" patternUnits="userSpaceOnUse">
   <path d="M10 0H0V10" fill="none" stroke="#3f6aa8" stroke-opacity="0.13" stroke-width="0.5"/></pattern>
  <pattern id="g2" width="50" height="50" patternUnits="userSpaceOnUse">
@@ -15,9 +15,9 @@
 <rect width="300" height="230" fill="url(#bg)"/>
 <rect width="300" height="230" fill="url(#g1)"/>
 <rect width="300" height="230" fill="url(#g2)"/>
-<rect x="10" y="10" width="280" height="210" fill="none" stroke="#5c85bd" stroke-width="1" stroke-opacity="0.65"/>
+<rect x="10" y="10" width="280" height="210" rx="14" fill="none" stroke="#5c85bd" stroke-width="1" stroke-opacity="0.65"/>
 <g filter="url(#hand)" fill="none" stroke="#134a91" stroke-linecap="round" stroke-linejoin="round" transform="translate(150.0,64) scale(1.75)"><path d="M 0.00 -9.00 L 2.22 -3.06 L 8.56 -2.78 L 3.59 1.17 L 5.29 7.28 L 0.00 3.78 L -5.29 7.28 L -3.59 1.17 L -8.56 -2.78 L -2.22 -3.06 Z" stroke-width="1.15"/></g>
 <text x="150.0" y="146" font-family="ui-monospace, 'JetBrains Mono', 'Courier New', monospace" font-size="52" font-weight="600" text-anchor="middle" fill="#134a91" letter-spacing="-1">1</text>
 <text x="150.0" y="176" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="15.5" font-weight="500" text-anchor="middle" fill="#2f5fa8">Total Stars</text>
-<text x="280" y="210" font-family="ui-monospace, 'JetBrains Mono', 'Courier New', monospace" font-size="8.5" text-anchor="end" fill="#5c85bd" fill-opacity="0.55" letter-spacing="1">UPD 2026-08-18 07:56 UTC</text>
+<text x="280" y="210" font-family="ui-monospace, 'JetBrains Mono', 'Courier New', monospace" font-size="8.5" text-anchor="end" fill="#5c85bd" fill-opacity="0.55" letter-spacing="1">UPD 2026-08-18 08:02 UTC</text>
 </svg>

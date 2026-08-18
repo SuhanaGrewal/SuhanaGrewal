@@ -212,8 +212,8 @@ SPECS = {
 def defs(W, H):
     return f'''<defs>
  <linearGradient id="bg" x1="0" y1="0" x2="0.4" y2="1">
-  <stop offset="0" stop-color="#e9f0fb"/><stop offset="0.55" stop-color="#dee8f7"/>
-  <stop offset="1" stop-color="#d2e0f3"/></linearGradient>
+  <stop offset="0" stop-color="#d8e6f7"/><stop offset="0.55" stop-color="#c8dcf2"/>
+  <stop offset="1" stop-color="#b7cdea"/></linearGradient>
  <pattern id="g1" width="10" height="10" patternUnits="userSpaceOnUse">
   <path d="M10 0H0V10" fill="none" stroke="{GRID}" stroke-opacity="0.13" stroke-width="0.5"/></pattern>
  <pattern id="g2" width="50" height="50" patternUnits="userSpaceOnUse">
@@ -261,7 +261,7 @@ def render_row(data, when):
         icon_fn, label, sub = SPECS[key]
         x = M + i * (bw + GAP)
         cx = x + bw / 2
-        o.append(f'<rect x="{x:.1f}" y="{by}" width="{bw:.1f}" height="{bh}" '
+        o.append(f'<rect x="{x:.1f}" y="{by}" width="{bw:.1f}" height="{bh}" rx="12" '
                  f'fill="none" stroke="{FAINT}" stroke-width="1" stroke-opacity="0.65"/>')
         o.append(f'<g filter="url(#hand)" fill="none" stroke="{INK}" stroke-linecap="round" '
                  f'stroke-linejoin="round" transform="translate({cx:.1f},{by+44}) scale(1.6)">'
@@ -285,7 +285,7 @@ def render_tile(key, data, when):
     icon_fn, label, sub = SPECS[key]
     o = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" '
          f'width="{W}" height="{H}">', defs(W, H)]
-    o.append(f'<rect x="10" y="10" width="{W-20}" height="{H-20}" fill="none" '
+    o.append(f'<rect x="10" y="10" width="{W-20}" height="{H-20}" rx="14" fill="none" '
              f'stroke="{FAINT}" stroke-width="1" stroke-opacity="0.65"/>')
     o.append(f'<g filter="url(#hand)" fill="none" stroke="{INK}" stroke-linecap="round" '
              f'stroke-linejoin="round" transform="translate({W/2:.1f},64) scale(1.75)">'
