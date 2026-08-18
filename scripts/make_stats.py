@@ -209,7 +209,9 @@ SPECS = {
 
 
 # ------------------------------------------------------------------- render
-def defs(W, H):
+def defs(W, H, rx=0):
+    """Background + grid. rx rounds the whole card, not just inner boxes."""
+    r = f' rx="{rx}"' if rx else ""
     return f'''<defs>
  <linearGradient id="bg" x1="0" y1="0" x2="0.4" y2="1">
   <stop offset="0" stop-color="#d8e6f7"/><stop offset="0.55" stop-color="#c8dcf2"/>
@@ -223,9 +225,9 @@ def defs(W, H):
   <feDisplacementMap in="SourceGraphic" in2="n" scale="1.0" xChannelSelector="R" yChannelSelector="G"/>
  </filter>
 </defs>
-<rect width="{W}" height="{H}" fill="url(#bg)"/>
-<rect width="{W}" height="{H}" fill="url(#g1)"/>
-<rect width="{W}" height="{H}" fill="url(#g2)"/>'''
+<rect width="{W}" height="{H}"{r} fill="url(#bg)"/>
+<rect width="{W}" height="{H}"{r} fill="url(#g1)"/>
+<rect width="{W}" height="{H}"{r} fill="url(#g2)"/>'''
 
 
 def cell(icon_fn, value, label, sub, ix, iy, nx, ny):
@@ -242,12 +244,6 @@ def cell(icon_fn, value, label, sub, ix, iy, nx, ny):
     return "".join(o)
 
 
-def stamp(W, H, when, pad_x=18, pad_y=12):
-    return (f'<text x="{W-pad_x}" y="{H-pad_y}" font-family="{MONO}" font-size="8.5" '
-            f'text-anchor="end" fill="{FAINT}" fill-opacity="0.55" '
-            f'letter-spacing="1">UPD {when}</text>')
-
-
 def render_row(data, when):
     """Four discrete boxes on one row - separate cards, but a single SVG so
     they can never wrap or drift out of alignment in a README."""
@@ -256,7 +252,7 @@ def render_row(data, when):
     bw = (W - 2 * M - 3 * GAP) / 4
     by, bh = 28, 164
     o = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" '
-         f'width="{W}" height="{H}">', defs(W, H)]
+         f'width="{W}" height="{H}">', defs(W, H, rx=18)]
     for i, key in enumerate(STATS):
         icon_fn, label, sub = SPECS[key]
         x = M + i * (bw + GAP)
@@ -274,21 +270,21 @@ def render_row(data, when):
         if sub:
             o.append(f'<text x="{cx:.1f}" y="{by+152}" font-family="{SF}" font-size="11.5" '
                      f'text-anchor="middle" fill="{FAINT}">{sub}</text>')
-    o.append(stamp(W, H, when))
     o.append("</svg>")
     return "\n".join(o)
 
 
 def render_tile(key, data, when):
     """One stat, square, for dropping into a 4-column README table."""
-    W, H = 300, 230
+    W, H, RX = 300, 220, 18
     icon_fn, label, sub = SPECS[key]
     o = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" '
-         f'width="{W}" height="{H}">', defs(W, H)]
-    o.append(f'<rect x="10" y="10" width="{W-20}" height="{H-20}" rx="14" fill="none" '
-             f'stroke="{FAINT}" stroke-width="1" stroke-opacity="0.65"/>')
+         f'width="{W}" height="{H}">', defs(W, H, rx=RX)]
+    # the card edge itself is the border - no inset frame
+    o.append(f'<rect x="0.5" y="0.5" width="{W-1}" height="{H-1}" rx="{RX}" fill="none" '
+             f'stroke="{FAINT}" stroke-width="1" stroke-opacity="0.7"/>')
     o.append(f'<g filter="url(#hand)" fill="none" stroke="{INK}" stroke-linecap="round" '
-             f'stroke-linejoin="round" transform="translate({W/2:.1f},64) scale(1.75)">'
+             f'stroke-linejoin="round" transform="translate({W/2:.1f},62) scale(1.75)">'
              f'{icon_fn()}</g>')
     o.append(f'<text x="{W/2}" y="146" font-family="{MONO}" font-size="52" font-weight="600" '
              f'text-anchor="middle" fill="{INK}" letter-spacing="-1">{data.get(key,0):,}</text>')
@@ -297,7 +293,6 @@ def render_tile(key, data, when):
     if sub:
         o.append(f'<text x="{W/2}" y="195" font-family="{SF}" font-size="12" '
                  f'text-anchor="middle" fill="{FAINT}">{sub}</text>')
-    o.append(stamp(W, H, when, pad_x=20, pad_y=20))   # inside the tile border
     o.append("</svg>")
     return "\n".join(o)
 
