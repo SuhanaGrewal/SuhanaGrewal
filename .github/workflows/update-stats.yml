@@ -36,9 +36,8 @@ jobs:
           GH_USER: SuhanaGrewal
           STATS_OUTDIR: "."
         run: |
-          python scripts/make_stats.py
-          # add --tiles as a second run if you also want the square versions:
-          # python scripts/make_stats.py --tiles
+          python scripts/make_stats.py           # wide row  -> stats.svg
+          python scripts/make_stats.py --tiles   # 4 tiles  -> stats-1..4-*.svg
 
       - name: Commit if changed
         run: |

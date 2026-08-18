@@ -177,12 +177,23 @@ def path_users(r=6.6):
             f'<circle cx="4.4" cy="0" r="{r}" stroke-width="1.15"/>')
 
 
-def path_flame(s=10):
-    d = (f"M 0 {s:.1f} C {-s*0.9:.1f} {s*0.2:.1f}, {-s*0.5:.1f} {-s*0.6:.1f}, "
-         f"{-s*0.1:.1f} {-s:.1f} C {s*0.05:.1f} {-s*0.55:.1f}, {s*0.55:.1f} {-s*0.5:.1f}, "
-         f"{s*0.35:.1f} {-s*0.05:.1f} C {s*0.85:.1f} {-s*0.1:.1f}, {s*0.85:.1f} {s*0.75:.1f}, "
-         f"0 {s:.1f} Z")
-    return f'<path d="{d}" stroke-width="1.15"/>'
+def path_flame():
+    """Fire: outer flame with a lick on the left, plus an inner core."""
+    outer = ("M 0 -14 "
+             "C -2 -8.5, -4.6 -6.6, -5.8 -3.4 "
+             "C -6.4 -5.2, -6.5 -7, -6.1 -8.6 "
+             "C -8.8 -5.2, -9.6 -0.6, -8.5 3 "
+             "C -7.2 7.6, -3.8 11, 0 11 "
+             "C 4.2 11, 7.9 7.4, 8.2 2.8 "
+             "C 8.5 -2.4, 5.2 -6.2, 2.4 -9 "
+             "C 1.3 -10.1, 0.4 -12.2, 0 -14 Z")
+    inner = ("M 0 -2.4 "
+             "C -1.4 0.2, -3.4 1.8, -3.4 4.5 "
+             "C -3.4 7.4, -1.6 9.2, 0 9.2 "
+             "C 1.7 9.2, 3.6 7.4, 3.6 4.5 "
+             "C 3.6 1.8, 1.4 0.2, 0 -2.4 Z")
+    return (f'<path d="{outer}" stroke-width="1.2"/>'
+            f'<path d="{inner}" stroke-width="0.9" stroke-opacity="0.8"/>')
 
 
 SPECS = {
@@ -269,23 +280,24 @@ def render_row(data, when):
 
 
 def render_tile(key, data, when):
-    W = H = 260
+    """One stat, square, for dropping into a 4-column README table."""
+    W, H = 300, 230
     icon_fn, label, sub = SPECS[key]
     o = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" '
          f'width="{W}" height="{H}">', defs(W, H)]
-    o.append(f'<rect x="16" y="16" width="{W-32}" height="{H-32}" fill="none" '
-             f'stroke="{FAINT}" stroke-width="0.8" stroke-opacity="0.5"/>')
+    o.append(f'<rect x="10" y="10" width="{W-20}" height="{H-20}" fill="none" '
+             f'stroke="{FAINT}" stroke-width="1" stroke-opacity="0.65"/>')
     o.append(f'<g filter="url(#hand)" fill="none" stroke="{INK}" stroke-linecap="round" '
-             f'stroke-linejoin="round" transform="translate({W/2:.1f},72) scale(1.5)">'
+             f'stroke-linejoin="round" transform="translate({W/2:.1f},64) scale(1.75)">'
              f'{icon_fn()}</g>')
-    o.append(f'<text x="{W/2}" y="152" font-family="{MONO}" font-size="46" font-weight="600" '
+    o.append(f'<text x="{W/2}" y="146" font-family="{MONO}" font-size="52" font-weight="600" '
              f'text-anchor="middle" fill="{INK}" letter-spacing="-1">{data.get(key,0):,}</text>')
-    o.append(f'<text x="{W/2}" y="184" font-family="{SF}" font-size="14" font-weight="500" '
+    o.append(f'<text x="{W/2}" y="176" font-family="{SF}" font-size="15.5" font-weight="500" '
              f'text-anchor="middle" fill="{MUTED}">{label}</text>')
     if sub:
-        o.append(f'<text x="{W/2}" y="202" font-family="{SF}" font-size="11.5" '
+        o.append(f'<text x="{W/2}" y="195" font-family="{SF}" font-size="12" '
                  f'text-anchor="middle" fill="{FAINT}">{sub}</text>')
-    o.append(stamp(W, H, when, pad_x=28, pad_y=30))   # inside the tile border
+    o.append(stamp(W, H, when, pad_x=20, pad_y=20))   # inside the tile border
     o.append("</svg>")
     return "\n".join(o)
 
