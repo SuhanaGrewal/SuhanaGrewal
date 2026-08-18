@@ -1,0 +1,293 @@
+#!/usr/bin/env python3
+"""Live GitHub stats strip, blueprint aesthetic (white paper / blue ink).
+
+Fetches real numbers from the GitHub API and renders an SVG. Designed to be run
+on a schedule by GitHub Actions, which commits the refreshed SVG back to the repo.
+
+    python3 make_stats.py                  # one wide row  -> stats.svg
+    python3 make_stats.py --tiles          # 4 square tiles -> stats-1.svg ...
+
+Auth: reads GITHUB_TOKEN from the environment; falls back to `gh auth token`
+locally. The contributions/streak figures require GraphQL, which needs a token.
+"""
+import json
+import math
+import os
+import subprocess
+import sys
+import urllib.request
+import datetime
+
+USER = os.environ.get("GH_USER", "SuhanaGrewal")
+OUTDIR = os.environ.get("STATS_OUTDIR", os.path.dirname(os.path.abspath(__file__)))
+
+# Which four stats to show, in order. Available keys:
+#   stars, repos, contributions, forks, followers, streak, longest_streak, active_days
+STATS = ("stars", "repos", "contributions", "streak")
+
+# ------------------------------------------------------------------ palette
+INK = "#0d3a75"      # primary blue - numbers, icons
+INK2 = "#173f7a"
+MUTED = "#3f6aa8"    # labels
+FAINT = "#5c7fae"    # dividers, stamp
+GRID = "#3f6aa8"
+SERIF = ("'Hoefler Text', Baskerville, 'Palatino Linotype', Palatino, "
+         "'Book Antiqua', Georgia, 'Times New Roman', serif")
+MONO = "ui-monospace, 'JetBrains Mono', 'Courier New', monospace"
+SF = ("-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', "
+      "Helvetica, Arial, sans-serif")
+
+
+# ------------------------------------------------------------------- fetch
+def token():
+    t = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+    if t:
+        return t.strip()
+    try:
+        return subprocess.check_output(["gh", "auth", "token"], text=True,
+                                       stderr=subprocess.DEVNULL).strip()
+    except Exception:
+        return ""
+
+
+def api(url, tok):
+    req = urllib.request.Request(url, headers={
+        "Accept": "application/vnd.github+json",
+        "User-Agent": "blueprint-stats",
+        **({"Authorization": f"Bearer {tok}"} if tok else {}),
+    })
+    with urllib.request.urlopen(req, timeout=30) as r:
+        return json.load(r)
+
+
+def graphql(query, variables, tok):
+    body = json.dumps({"query": query, "variables": variables}).encode()
+    req = urllib.request.Request("https://api.github.com/graphql", data=body, headers={
+        "Authorization": f"Bearer {tok}",
+        "Content-Type": "application/json",
+        "User-Agent": "blueprint-stats",
+    })
+    with urllib.request.urlopen(req, timeout=30) as r:
+        out = json.load(r)
+    if "errors" in out:
+        raise RuntimeError(out["errors"])
+    return out["data"]
+
+
+def collect():
+    tok = token()
+    data = {}
+
+    # --- REST: repos, stars, forks, followers -------------------------
+    stars = forks = repos = 0
+    page = 1
+    while True:
+        batch = api(f"https://api.github.com/users/{USER}/repos"
+                    f"?per_page=100&type=owner&page={page}", tok)
+        if not batch:
+            break
+        for r in batch:
+            if r.get("fork"):
+                continue
+            repos += 1
+            stars += r.get("stargazers_count", 0)
+            forks += r.get("forks_count", 0)
+        if len(batch) < 100:
+            break
+        page += 1
+    profile = api(f"https://api.github.com/users/{USER}", tok)
+    data.update(stars=stars, forks=forks, repos=repos,
+                followers=profile.get("followers", 0))
+
+    # --- GraphQL: contribution calendar -------------------------------
+    data.update(contributions=0, streak=0, longest_streak=0, active_days=0)
+    if not tok:
+        print("warning: no token, skipping contributions/streak", file=sys.stderr)
+        return data
+    try:
+        q = """query($u:String!){user(login:$u){contributionsCollection{
+                 contributionCalendar{ totalContributions
+                   weeks{ contributionDays{ date contributionCount } } } } } }"""
+        cal = graphql(q, {"u": USER}, tok)["user"]["contributionsCollection"]["contributionCalendar"]
+        data["contributions"] = cal["totalContributions"]
+        days = sorted((d for w in cal["weeks"] for d in w["contributionDays"]),
+                      key=lambda d: d["date"])
+        today = datetime.date.today()
+        days = [d for d in days if datetime.date.fromisoformat(d["date"]) <= today]
+        # current streak: walk back from today; today being empty doesn't break it
+        cur = 0
+        for i, d in enumerate(reversed(days)):
+            if d["contributionCount"] > 0:
+                cur += 1
+            elif i == 0:
+                continue          # today not counted yet
+            else:
+                break
+        best = run = 0
+        for d in days:
+            run = run + 1 if d["contributionCount"] > 0 else 0
+            best = max(best, run)
+        data.update(streak=cur, longest_streak=best,
+                    active_days=sum(1 for d in days if d["contributionCount"] > 0))
+    except Exception as e:
+        print(f"warning: contributions unavailable ({e})", file=sys.stderr)
+    return data
+
+
+# -------------------------------------------------------------------- icons
+def pol(cx, cy, r, a):
+    return (cx + r * math.cos(a), cy + r * math.sin(a))
+
+
+def path_star(r=9):
+    pts = []
+    for i in range(10):
+        rad = r if i % 2 == 0 else r * 0.42
+        pts.append(pol(0, 0, rad, -math.pi / 2 + i * math.pi / 5))
+    d = "M %.2f %.2f " % pts[0] + " ".join("L %.2f %.2f" % p for p in pts[1:]) + " Z"
+    return f'<path d="{d}" stroke-width="1.15"/>'
+
+
+def path_repo(w=19, h=15):
+    x, y = -w / 2, -h / 2
+    return (f'<path d="M {x:.1f} {y+3:.1f} h 7 v -3 h {w-7:.1f} v {h:.1f} h -{w:.1f} Z" '
+            f'stroke-width="1.2"/>'
+            f'<path d="M {x:.1f} {y+3:.1f} h {w:.1f}" stroke-width="0.75"/>')
+
+
+def path_pulse(w=24, h=14):
+    x = -w / 2
+    return (f'<path d="M {x:.1f} 0 h {w*0.2:.1f} l {w*0.13:.1f} {-h:.1f} '
+            f'l {w*0.16:.1f} {h*1.55:.1f} l {w*0.13:.1f} {-h*0.8:.1f} h {w*0.38:.1f}" '
+            'stroke-width="1.25"/>')
+
+
+def path_fork():
+    return ('<circle cx="-7" cy="-7" r="3.4" stroke-width="1.15"/>'
+            '<circle cx="7" cy="-7" r="3.4" stroke-width="1.15"/>'
+            '<circle cx="0" cy="8" r="3.4" stroke-width="1.15"/>'
+            '<path d="M -7 -3.6 v 3 a 4 4 0 0 0 4 4 h 6 a 4 4 0 0 0 4 -4 v -3" '
+            'stroke-width="1.1"/><path d="M 0 4.6 V 3.4" stroke-width="1.1"/>')
+
+
+def path_users(r=6.6):
+    return (f'<circle cx="-4.4" cy="0" r="{r}" stroke-width="1.15"/>'
+            f'<circle cx="4.4" cy="0" r="{r}" stroke-width="1.15"/>')
+
+
+def path_flame(s=10):
+    d = (f"M 0 {s:.1f} C {-s*0.9:.1f} {s*0.2:.1f}, {-s*0.5:.1f} {-s*0.6:.1f}, "
+         f"{-s*0.1:.1f} {-s:.1f} C {s*0.05:.1f} {-s*0.55:.1f}, {s*0.55:.1f} {-s*0.5:.1f}, "
+         f"{s*0.35:.1f} {-s*0.05:.1f} C {s*0.85:.1f} {-s*0.1:.1f}, {s*0.85:.1f} {s*0.75:.1f}, "
+         f"0 {s:.1f} Z")
+    return f'<path d="{d}" stroke-width="1.15"/>'
+
+
+SPECS = {
+    "stars":          (path_star,  "Total Stars", None),
+    "repos":          (path_repo,  "Repositories", None),
+    "contributions":  (path_pulse, "Contributions", "(this year)"),
+    "forks":          (path_fork,  "Total Forks", None),
+    "followers":      (path_users, "Followers", None),
+    "streak":         (path_flame, "Current Streak", "(days)"),
+    "longest_streak": (path_flame, "Longest Streak", "(days)"),
+    "active_days":    (path_pulse, "Active Days", "(this year)"),
+}
+
+
+# ------------------------------------------------------------------- render
+def defs(W, H):
+    return f'''<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="0.4" y2="1">
+  <stop offset="0" stop-color="#fdfdff"/><stop offset="0.55" stop-color="#f4f7fd"/>
+  <stop offset="1" stop-color="#eaf0fa"/></linearGradient>
+ <pattern id="g1" width="10" height="10" patternUnits="userSpaceOnUse">
+  <path d="M10 0H0V10" fill="none" stroke="{GRID}" stroke-opacity="0.13" stroke-width="0.5"/></pattern>
+ <pattern id="g2" width="50" height="50" patternUnits="userSpaceOnUse">
+  <path d="M50 0H0V50" fill="none" stroke="{GRID}" stroke-opacity="0.2" stroke-width="0.7"/></pattern>
+ <filter id="hand" x="-8%" y="-8%" width="116%" height="116%">
+  <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" seed="11" result="n"/>
+  <feDisplacementMap in="SourceGraphic" in2="n" scale="1.0" xChannelSelector="R" yChannelSelector="G"/>
+ </filter>
+</defs>
+<rect width="{W}" height="{H}" fill="url(#bg)"/>
+<rect width="{W}" height="{H}" fill="url(#g1)"/>
+<rect width="{W}" height="{H}" fill="url(#g2)"/>'''
+
+
+def cell(icon_fn, value, label, sub, ix, iy, nx, ny):
+    """icon at (ix,iy); number/label block starting at nx"""
+    o = [f'<g filter="url(#hand)" fill="none" stroke="{INK}" stroke-linecap="round" '
+         f'stroke-linejoin="round" transform="translate({ix:.1f},{iy:.1f})">{icon_fn()}</g>']
+    o.append(f'<text x="{nx:.1f}" y="{ny:.1f}" font-family="{MONO}" font-size="34" '
+             f'font-weight="600" fill="{INK}" letter-spacing="-0.5">{value}</text>')
+    o.append(f'<text x="{nx:.1f}" y="{ny+24:.1f}" font-family="{SF}" font-size="13" '
+             f'font-weight="500" fill="{MUTED}">{label}</text>')
+    if sub:
+        o.append(f'<text x="{nx:.1f}" y="{ny+40:.1f}" font-family="{SF}" font-size="11" '
+                 f'fill="{FAINT}" fill-opacity="0.9">{sub}</text>')
+    return "".join(o)
+
+
+def stamp(W, H, when, pad_x=18, pad_y=12):
+    return (f'<text x="{W-pad_x}" y="{H-pad_y}" font-family="{MONO}" font-size="8.5" '
+            f'text-anchor="end" fill="{FAINT}" fill-opacity="0.55" '
+            f'letter-spacing="1">UPD {when}</text>')
+
+
+def render_row(data, when):
+    W, H = 1200, 170
+    M = 40
+    CW = W - 2 * M
+    cw = CW / 4
+    o = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" '
+         f'width="{W}" height="{H}">', defs(W, H)]
+    for i, key in enumerate(STATS):
+        icon_fn, label, sub = SPECS[key]
+        x = M + i * cw
+        o.append(cell(icon_fn, f"{data.get(key,0):,}", label, sub,
+                      x + 26, H / 2 - 6, x + 52, H / 2 + 4))
+        if i < 3:
+            o.append(f'<path d="M {x+cw:.1f} 38 V {H-38}" stroke="{FAINT}" '
+                     'stroke-width="0.6" stroke-opacity="0.45"/>')
+    o.append(stamp(W, H, when))
+    o.append("</svg>")
+    return "\n".join(o)
+
+
+def render_tile(key, data, when):
+    W = H = 260
+    icon_fn, label, sub = SPECS[key]
+    o = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" '
+         f'width="{W}" height="{H}">', defs(W, H)]
+    o.append(f'<rect x="16" y="16" width="{W-32}" height="{H-32}" fill="none" '
+             f'stroke="{FAINT}" stroke-width="0.8" stroke-opacity="0.5"/>')
+    o.append(f'<g filter="url(#hand)" fill="none" stroke="{INK}" stroke-linecap="round" '
+             f'stroke-linejoin="round" transform="translate({W/2:.1f},72) scale(1.5)">'
+             f'{icon_fn()}</g>')
+    o.append(f'<text x="{W/2}" y="152" font-family="{MONO}" font-size="46" font-weight="600" '
+             f'text-anchor="middle" fill="{INK}" letter-spacing="-1">{data.get(key,0):,}</text>')
+    o.append(f'<text x="{W/2}" y="184" font-family="{SF}" font-size="14" font-weight="500" '
+             f'text-anchor="middle" fill="{MUTED}">{label}</text>')
+    if sub:
+        o.append(f'<text x="{W/2}" y="202" font-family="{SF}" font-size="11.5" '
+                 f'text-anchor="middle" fill="{FAINT}">{sub}</text>')
+    o.append(stamp(W, H, when, pad_x=28, pad_y=30))   # inside the tile border
+    o.append("</svg>")
+    return "\n".join(o)
+
+
+if __name__ == "__main__":
+    d = collect()
+    when = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    print("stats:", {k: d[k] for k in sorted(d)})
+    os.makedirs(OUTDIR, exist_ok=True)
+    if "--tiles" in sys.argv:
+        for i, key in enumerate(STATS, 1):
+            p = os.path.join(OUTDIR, f"stats-{i}-{key}.svg")
+            open(p, "w").write(render_tile(key, d, when))
+            print("wrote", p)
+    else:
+        p = os.path.join(OUTDIR, "stats.svg")
+        open(p, "w").write(render_row(d, when))
+        print("wrote", p)

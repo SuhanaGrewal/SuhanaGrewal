@@ -1,0 +1,49 @@
+# Put this at: .github/workflows/update-stats.yml  (in your profile repo SuhanaGrewal/SuhanaGrewal)
+# It re-renders the stats SVG on a schedule and commits it back, so the numbers stay current.
+
+name: Update stats SVG
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"     # every 6 hours (offset so it isn't on the hour)
+  workflow_dispatch:            # lets you run it manually from the Actions tab
+  push:
+    branches: [main]
+
+permissions:
+  contents: write               # required to commit the refreshed SVG
+
+concurrency:
+  group: update-stats
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Render stats
+        env:
+          # GITHUB_TOKEN works for stars/repos/forks. If the contributions or
+          # streak numbers come back as 0, add a classic PAT with read:user
+          # as a repo secret named GH_STATS_TOKEN and it will be used instead.
+          GITHUB_TOKEN: ${{ secrets.GH_STATS_TOKEN || secrets.GITHUB_TOKEN }}
+          GH_USER: SuhanaGrewal
+          STATS_OUTDIR: "."
+        run: |
+          python scripts/make_stats.py
+          # add --tiles as a second run if you also want the square versions:
+          # python scripts/make_stats.py --tiles
+
+      - name: Commit if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -- "*.svg"
+          git diff --staged --quiet || git commit -m "chore: refresh stats [skip ci]"
+          git push
