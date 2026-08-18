@@ -26,10 +26,12 @@ OUTDIR = os.environ.get("STATS_OUTDIR", os.path.dirname(os.path.abspath(__file__
 STATS = ("stars", "repos", "contributions", "streak")
 
 # ------------------------------------------------------------------ palette
-INK = "#0d3a75"      # primary blue - numbers, icons
-INK2 = "#173f7a"
-MUTED = "#3f6aa8"    # labels
-FAINT = "#5c7fae"    # dividers, stamp
+# Ink matches the mid stop of the header.svg background gradient, so the text
+# here is literally the same blue as that banner's paper.
+INK = "#134a91"      # primary blue - numbers, icons
+INK2 = "#1a5cad"
+MUTED = "#2f5fa8"    # labels
+FAINT = "#5c85bd"    # borders, stamp
 GRID = "#3f6aa8"
 SERIF = ("'Hoefler Text', Baskerville, 'Palatino Linotype', Palatino, "
          "'Book Antiqua', Georgia, 'Times New Roman', serif")
@@ -199,8 +201,8 @@ SPECS = {
 def defs(W, H):
     return f'''<defs>
  <linearGradient id="bg" x1="0" y1="0" x2="0.4" y2="1">
-  <stop offset="0" stop-color="#fdfdff"/><stop offset="0.55" stop-color="#f4f7fd"/>
-  <stop offset="1" stop-color="#eaf0fa"/></linearGradient>
+  <stop offset="0" stop-color="#e9f0fb"/><stop offset="0.55" stop-color="#dee8f7"/>
+  <stop offset="1" stop-color="#d2e0f3"/></linearGradient>
  <pattern id="g1" width="10" height="10" patternUnits="userSpaceOnUse">
   <path d="M10 0H0V10" fill="none" stroke="{GRID}" stroke-opacity="0.13" stroke-width="0.5"/></pattern>
  <pattern id="g2" width="50" height="50" patternUnits="userSpaceOnUse">
@@ -236,20 +238,31 @@ def stamp(W, H, when, pad_x=18, pad_y=12):
 
 
 def render_row(data, when):
-    W, H = 1200, 170
-    M = 40
-    CW = W - 2 * M
-    cw = CW / 4
+    """Four discrete boxes on one row - separate cards, but a single SVG so
+    they can never wrap or drift out of alignment in a README."""
+    W, H = 1200, 230
+    M, GAP = 34, 20
+    bw = (W - 2 * M - 3 * GAP) / 4
+    by, bh = 28, 164
     o = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" '
          f'width="{W}" height="{H}">', defs(W, H)]
     for i, key in enumerate(STATS):
         icon_fn, label, sub = SPECS[key]
-        x = M + i * cw
-        o.append(cell(icon_fn, f"{data.get(key,0):,}", label, sub,
-                      x + 26, H / 2 - 6, x + 52, H / 2 + 4))
-        if i < 3:
-            o.append(f'<path d="M {x+cw:.1f} 38 V {H-38}" stroke="{FAINT}" '
-                     'stroke-width="0.6" stroke-opacity="0.45"/>')
+        x = M + i * (bw + GAP)
+        cx = x + bw / 2
+        o.append(f'<rect x="{x:.1f}" y="{by}" width="{bw:.1f}" height="{bh}" '
+                 f'fill="none" stroke="{FAINT}" stroke-width="1" stroke-opacity="0.65"/>')
+        o.append(f'<g filter="url(#hand)" fill="none" stroke="{INK}" stroke-linecap="round" '
+                 f'stroke-linejoin="round" transform="translate({cx:.1f},{by+44}) scale(1.6)">'
+                 f'{icon_fn()}</g>')
+        o.append(f'<text x="{cx:.1f}" y="{by+108}" font-family="{MONO}" font-size="46" '
+                 f'font-weight="600" text-anchor="middle" fill="{INK}" '
+                 f'letter-spacing="-1">{data.get(key,0):,}</text>')
+        o.append(f'<text x="{cx:.1f}" y="{by+134}" font-family="{SF}" font-size="14.5" '
+                 f'font-weight="500" text-anchor="middle" fill="{MUTED}">{label}</text>')
+        if sub:
+            o.append(f'<text x="{cx:.1f}" y="{by+152}" font-family="{SF}" font-size="11.5" '
+                     f'text-anchor="middle" fill="{FAINT}">{sub}</text>')
     o.append(stamp(W, H, when))
     o.append("</svg>")
     return "\n".join(o)

@@ -1,8 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 170" width="1200" height="170">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 230" width="1200" height="230">
 <defs>
  <linearGradient id="bg" x1="0" y1="0" x2="0.4" y2="1">
-  <stop offset="0" stop-color="#fdfdff"/><stop offset="0.55" stop-color="#f4f7fd"/>
-  <stop offset="1" stop-color="#eaf0fa"/></linearGradient>
+  <stop offset="0" stop-color="#e9f0fb"/><stop offset="0.55" stop-color="#dee8f7"/>
+  <stop offset="1" stop-color="#d2e0f3"/></linearGradient>
  <pattern id="g1" width="10" height="10" patternUnits="userSpaceOnUse">
   <path d="M10 0H0V10" fill="none" stroke="#3f6aa8" stroke-opacity="0.13" stroke-width="0.5"/></pattern>
  <pattern id="g2" width="50" height="50" patternUnits="userSpaceOnUse">
@@ -12,15 +12,26 @@
   <feDisplacementMap in="SourceGraphic" in2="n" scale="1.0" xChannelSelector="R" yChannelSelector="G"/>
  </filter>
 </defs>
-<rect width="1200" height="170" fill="url(#bg)"/>
-<rect width="1200" height="170" fill="url(#g1)"/>
-<rect width="1200" height="170" fill="url(#g2)"/>
-<g filter="url(#hand)" fill="none" stroke="#0d3a75" stroke-linecap="round" stroke-linejoin="round" transform="translate(66.0,79.0)"><path d="M 0.00 -9.00 L 2.22 -3.06 L 8.56 -2.78 L 3.59 1.17 L 5.29 7.28 L 0.00 3.78 L -5.29 7.28 L -3.59 1.17 L -8.56 -2.78 L -2.22 -3.06 Z" stroke-width="1.15"/></g><text x="92.0" y="89.0" font-family="ui-monospace, 'JetBrains Mono', 'Courier New', monospace" font-size="34" font-weight="600" fill="#0d3a75" letter-spacing="-0.5">1</text><text x="92.0" y="113.0" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#3f6aa8">Total Stars</text>
-<path d="M 320.0 38 V 132" stroke="#5c7fae" stroke-width="0.6" stroke-opacity="0.45"/>
-<g filter="url(#hand)" fill="none" stroke="#0d3a75" stroke-linecap="round" stroke-linejoin="round" transform="translate(346.0,79.0)"><path d="M -9.5 -4.5 h 7 v -3 h 12.0 v 15.0 h -19.0 Z" stroke-width="1.2"/><path d="M -9.5 -4.5 h 19.0" stroke-width="0.75"/></g><text x="372.0" y="89.0" font-family="ui-monospace, 'JetBrains Mono', 'Courier New', monospace" font-size="34" font-weight="600" fill="#0d3a75" letter-spacing="-0.5">4</text><text x="372.0" y="113.0" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#3f6aa8">Repositories</text>
-<path d="M 600.0 38 V 132" stroke="#5c7fae" stroke-width="0.6" stroke-opacity="0.45"/>
-<g filter="url(#hand)" fill="none" stroke="#0d3a75" stroke-linecap="round" stroke-linejoin="round" transform="translate(626.0,79.0)"><path d="M -12.0 0 h 4.8 l 3.1 -14.0 l 3.8 21.7 l 3.1 -11.2 h 9.1" stroke-width="1.25"/></g><text x="652.0" y="89.0" font-family="ui-monospace, 'JetBrains Mono', 'Courier New', monospace" font-size="34" font-weight="600" fill="#0d3a75" letter-spacing="-0.5">396</text><text x="652.0" y="113.0" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#3f6aa8">Contributions</text><text x="652.0" y="129.0" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" fill="#5c7fae" fill-opacity="0.9">(this year)</text>
-<path d="M 880.0 38 V 132" stroke="#5c7fae" stroke-width="0.6" stroke-opacity="0.45"/>
-<g filter="url(#hand)" fill="none" stroke="#0d3a75" stroke-linecap="round" stroke-linejoin="round" transform="translate(906.0,79.0)"><path d="M 0 10.0 C -9.0 2.0, -5.0 -6.0, -1.0 -10.0 C 0.5 -5.5, 5.5 -5.0, 3.5 -0.5 C 8.5 -1.0, 8.5 7.5, 0 10.0 Z" stroke-width="1.15"/></g><text x="932.0" y="89.0" font-family="ui-monospace, 'JetBrains Mono', 'Courier New', monospace" font-size="34" font-weight="600" fill="#0d3a75" letter-spacing="-0.5">10</text><text x="932.0" y="113.0" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#3f6aa8">Current Streak</text><text x="932.0" y="129.0" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" fill="#5c7fae" fill-opacity="0.9">(days)</text>
-<text x="1182" y="158" font-family="ui-monospace, 'JetBrains Mono', 'Courier New', monospace" font-size="8.5" text-anchor="end" fill="#5c7fae" fill-opacity="0.55" letter-spacing="1">UPD 2026-08-18 07:04 UTC</text>
+<rect width="1200" height="230" fill="url(#bg)"/>
+<rect width="1200" height="230" fill="url(#g1)"/>
+<rect width="1200" height="230" fill="url(#g2)"/>
+<rect x="34.0" y="28" width="268.0" height="164" fill="none" stroke="#5c85bd" stroke-width="1" stroke-opacity="0.65"/>
+<g filter="url(#hand)" fill="none" stroke="#134a91" stroke-linecap="round" stroke-linejoin="round" transform="translate(168.0,72) scale(1.6)"><path d="M 0.00 -9.00 L 2.22 -3.06 L 8.56 -2.78 L 3.59 1.17 L 5.29 7.28 L 0.00 3.78 L -5.29 7.28 L -3.59 1.17 L -8.56 -2.78 L -2.22 -3.06 Z" stroke-width="1.15"/></g>
+<text x="168.0" y="136" font-family="ui-monospace, 'JetBrains Mono', 'Courier New', monospace" font-size="46" font-weight="600" text-anchor="middle" fill="#134a91" letter-spacing="-1">1</text>
+<text x="168.0" y="162" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="14.5" font-weight="500" text-anchor="middle" fill="#2f5fa8">Total Stars</text>
+<rect x="322.0" y="28" width="268.0" height="164" fill="none" stroke="#5c85bd" stroke-width="1" stroke-opacity="0.65"/>
+<g filter="url(#hand)" fill="none" stroke="#134a91" stroke-linecap="round" stroke-linejoin="round" transform="translate(456.0,72) scale(1.6)"><path d="M -9.5 -4.5 h 7 v -3 h 12.0 v 15.0 h -19.0 Z" stroke-width="1.2"/><path d="M -9.5 -4.5 h 19.0" stroke-width="0.75"/></g>
+<text x="456.0" y="136" font-family="ui-monospace, 'JetBrains Mono', 'Courier New', monospace" font-size="46" font-weight="600" text-anchor="middle" fill="#134a91" letter-spacing="-1">4</text>
+<text x="456.0" y="162" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="14.5" font-weight="500" text-anchor="middle" fill="#2f5fa8">Repositories</text>
+<rect x="610.0" y="28" width="268.0" height="164" fill="none" stroke="#5c85bd" stroke-width="1" stroke-opacity="0.65"/>
+<g filter="url(#hand)" fill="none" stroke="#134a91" stroke-linecap="round" stroke-linejoin="round" transform="translate(744.0,72) scale(1.6)"><path d="M -12.0 0 h 4.8 l 3.1 -14.0 l 3.8 21.7 l 3.1 -11.2 h 9.1" stroke-width="1.25"/></g>
+<text x="744.0" y="136" font-family="ui-monospace, 'JetBrains Mono', 'Courier New', monospace" font-size="46" font-weight="600" text-anchor="middle" fill="#134a91" letter-spacing="-1">395</text>
+<text x="744.0" y="162" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="14.5" font-weight="500" text-anchor="middle" fill="#2f5fa8">Contributions</text>
+<text x="744.0" y="180" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11.5" text-anchor="middle" fill="#5c85bd">(this year)</text>
+<rect x="898.0" y="28" width="268.0" height="164" fill="none" stroke="#5c85bd" stroke-width="1" stroke-opacity="0.65"/>
+<g filter="url(#hand)" fill="none" stroke="#134a91" stroke-linecap="round" stroke-linejoin="round" transform="translate(1032.0,72) scale(1.6)"><path d="M 0 10.0 C -9.0 2.0, -5.0 -6.0, -1.0 -10.0 C 0.5 -5.5, 5.5 -5.0, 3.5 -0.5 C 8.5 -1.0, 8.5 7.5, 0 10.0 Z" stroke-width="1.15"/></g>
+<text x="1032.0" y="136" font-family="ui-monospace, 'JetBrains Mono', 'Courier New', monospace" font-size="46" font-weight="600" text-anchor="middle" fill="#134a91" letter-spacing="-1">9</text>
+<text x="1032.0" y="162" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="14.5" font-weight="500" text-anchor="middle" fill="#2f5fa8">Current Streak</text>
+<text x="1032.0" y="180" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11.5" text-anchor="middle" fill="#5c85bd">(days)</text>
+<text x="1182" y="218" font-family="ui-monospace, 'JetBrains Mono', 'Courier New', monospace" font-size="8.5" text-anchor="end" fill="#5c85bd" fill-opacity="0.55" letter-spacing="1">UPD 2026-08-18 07:55 UTC</text>
 </svg>
