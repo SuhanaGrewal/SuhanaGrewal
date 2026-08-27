@@ -17,6 +17,6 @@
 <rect width="300" height="220" rx="18" fill="url(#g2)"/>
 <rect x="0.5" y="0.5" width="299" height="219" rx="18" fill="none" stroke="#5c85bd" stroke-width="1" stroke-opacity="0.7"/>
 <g filter="url(#hand)" fill="none" stroke="#134a91" stroke-linecap="round" stroke-linejoin="round" transform="translate(150.0,62) scale(1.75)"><path d="M -9.5 -4.5 h 7 v -3 h 12.0 v 15.0 h -19.0 Z" stroke-width="1.2"/><path d="M -9.5 -4.5 h 19.0" stroke-width="0.75"/></g>
-<text x="150.0" y="146" font-family="ui-monospace, 'JetBrains Mono', 'Courier New', monospace" font-size="52" font-weight="600" text-anchor="middle" fill="#134a91" letter-spacing="-1">4</text>
+<text x="150.0" y="146" font-family="ui-monospace, 'JetBrains Mono', 'Courier New', monospace" font-size="52" font-weight="600" text-anchor="middle" fill="#134a91" letter-spacing="-1">5</text>
 <text x="150.0" y="176" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="15.5" font-weight="500" text-anchor="middle" fill="#2f5fa8">Repositories</text>
 </svg>
